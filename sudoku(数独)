@@ -1,0 +1,134 @@
+/*开发一个设计依靠试探法解决数独的函数*/
+#include <stdio.h>
+#include <stdbool.h>
+
+int a[9][9]={
+        0,
+};
+int b[9][9];
+
+bool judge_row_column(int ,int );
+bool judge_cube(int ,int );
+bool judge(int ,int );
+void putout(void);
+void trackStudiko(int ,int );
+void initial(void);
+
+
+int main(void){
+    initial();
+    trackStudiko(0,0);
+}
+
+void initial(void){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            scanf("%d",&(a[i][j]));
+            b[i][j]=a[i][j];
+        }
+    }
+}
+
+
+void trackStudiko(int r,int c){
+	//putout();
+    if(r>=9){
+        putout();
+        return ;
+    }
+    if(b[r][c]!=0){//如果某一个位置已经有数存在
+        if(judge(r,c)){
+            if(c==8){
+                trackStudiko(r+1,0);
+            }
+            else{
+                trackStudiko(r,c+1);
+
+            }
+        }
+    }
+    else{//否则该位置为空
+        for(int i=1;i<10;i++){
+            a[r][c]=i;
+            if(judge(r,c)){
+                if(c==8){
+                    trackStudiko(r+1,0);
+                }
+                else{
+                    trackStudiko(r,c+1);
+                }
+            }
+        }
+    }
+}
+
+bool judge_row_column(int r,int c){
+    int i;
+    for(i=0;i<r;i++){
+        if(a[i][c]==a[r][c]){
+            return false;
+        }
+    }
+    for(i=0;i<c;i++){
+        if(a[r][c]==a[r][i]){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool judge_cube(int r,int c){
+    int i,j;
+    for(i=r-1;i>=r-r%3;i--){
+        for(j=c-c%3;j<=c-c%3+2;j++){
+            if(a[r][c]==a[i][j]){
+                return false;
+            }
+        }
+    }
+    for(j=c-1;j>=c-c%3;j--){
+    	if(a[r][c]==a[r][j]){
+    		return false;
+		}
+	}
+	for(i=0;i<9;i++){//列遍历 
+		if(i==r){
+			continue;
+		}
+		else{
+			if(a[r][c]==b[i][c]){
+				return false;
+			}
+		}
+	}
+	for(j=0;j<9;j++){//行遍历 
+		if(j==c){
+			continue;
+		}
+		else{
+			if(a[r][c]==b[r][j]){
+				return false;
+			}
+		}
+	}
+    return true;
+}
+
+bool judge(int r,int c){
+    if(judge_cube(r,c)&&judge_row_column(r,c)){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+void putout(void){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            printf("%3d",a[i][j]);
+        }
+        puts("");
+    }
+    puts("");
+}
