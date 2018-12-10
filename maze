@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdbool.h>
+#define START_X 0
+#define START_Y 0
+#define END_X   5
+#define END_Y   6
+
+int a[7][7]={	{0,1,0,0,0,0,1},
+				{0,0,0,1,0,1,1},
+				{1,0,1,0,0,0,1},
+				{0,0,0,1,0,0,1},
+				{0,1,0,1,1,1,1},
+				{0,1,1,0,0,0,0},
+				{0,0,0,0,0,1,1}
+									};
+int b[7][7];
+int c[98]={0,};
+int count=0;
+void add_section(int,int,char);
+void explore(int,int,char);
+void putout();
+bool trace_back(int ,int );
+void add_count(int ,int );
+void prinf_for_experiment(int a[][7]);
+
+int main(void){
+	int i,j;
+	
+	for(i=0;i<7;i++){
+		for(j=0;j<7;j++){
+			b[i][j]=a[i][j];
+		}
+	}
+	
+	explore(START_X,START_Y,'D');
+}
+
+void explore(int x,int y,char ch){
+	if(trace_back(x,y)){
+		count-=2;
+		return ;							//如果经过重复的道路，退出 
+	}
+	a[x][y]=2;
+	if(x==5&&y==6){
+		putout();							//到达终点，退出并打印
+		return ; 
+	}
+	else{
+		add_section(x,y,ch);				//探索 	
+	}
+}
+
+void putout(){
+	int n=0;
+	puts("the solution maps is as follows:");
+	printf("(%d,%d)",START_X,START_Y);
+	while(c[n]!=0&&n<=98){
+		printf("->(%d,%d)",c[n],c[n+1]);
+		n+=2;
+	}
+}
+
+bool trace_back(int x,int y){
+	if(a[x][y]==2){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+void add_section(int i,int j,char ch){
+	 if(i-1>=0&&b[i-1][j]!=1&&ch!='D'){					//上一个节点不是往下的,向上探索 
+	 	add_count(i-1,j);
+	 	explore(i-1,j,'U');
+	 }
+	 if(i+1<=6&&b[i+1][j]!=1&&ch!='U'){					//上一个节点不是往下的，向上探索 
+	 	add_count(i+1,j);
+	 	explore(i+1,j,'D');
+	 }
+	 if(j-1>=0&&b[i][j-1]!=1&&ch!='R'){					//上一个节点不是往右的，向左探索 
+	 	add_count(i,j-1);
+	 	explore(i,j-1,'L');
+	 }
+	 if(j+1<=6&&b[i][j+1]!=1&&ch!='L'){					//上一个节点不是往左地，向右探索 
+	 	add_count(i,j+1);
+	 	explore(i,j+1,'R');
+	 }
+	 return ;
+}
+
+void add_count(int x,int y){
+	c[count]=x;
+	c[count+1]=y;
+	count+=2;
+}
+
+void prinf_for_experiment(int a[][7]){
+	int i,j; 
+	for(i=0;i<7;i++){
+		for(j=0;j<7;j++){
+			printf("%5d",a[i][j]);
+		}
+		puts("");
+	}
+	puts("");
+}
