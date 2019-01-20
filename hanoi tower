@@ -1,0 +1,22 @@
+#include <stdio.h>
+
+void hanoi(int n,char origin,char target,char assist)
+{
+	if(n<=0)
+	{
+		return ;
+	}else{
+		hanoi(n-1,origin,assist,target);
+		printf("move floor %d from %c to %c\n",n,origin,target);//一次移动 
+		hanoi(n-1,assist,target,origin); 
+	}
+}
+
+int main(void)
+{
+	int x;
+	scanf("%d",&x);
+	hanoi(x,'a','c','b');
+	
+	return 0;
+}
