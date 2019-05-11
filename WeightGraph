@@ -1,0 +1,67 @@
+#ifndef WEIGHTGRAPH_H
+#define WEIGHTGRAPH_H
+
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <climits>
+
+///边链表，用于标示与对应节点相连的节点标号，通过索引能够访问到对应数据
+struct NodeList
+{
+	///与头结点相连的节点的标号
+	int label;
+	///对应边权
+	int weight;
+	NodeList *next;
+	///nullptr可以转化为任何指针类型或者布尔类型
+	///使用自定义初始化方式之后编译器不会生成默认版本
+	NodeList(int la = 0, int we = 0):label(la),weight(we),next(nullptr){}
+	NodeList(NodeList &nList):label(nList.label), weight(nList.label), next(nullptr){}
+};
+
+///顶点表,用于标示顶点，使用顺序存储结构
+struct HeadList
+{
+	int label;
+	NodeList *head;
+	HeadList(int la = 0):label(la), head(nullptr){}
+};
+
+///采用邻接表实现节点的储存
+///加权图类，实际继承了图类
+class WeightGraph
+{
+public:
+	WeightGraph(int vsum = 0, int esum = 0) : vertexSum(vsum), edgeSum(esum), hlist(nullptr)
+	{
+		hlist = new HeadList[vertexSum];
+	}
+	///采用深拷贝的方式进行拷贝
+	///使用动态成员时注意检测自赋值
+	WeightGraph(const WeightGraph &gr);
+	WeightGraph& operator=(const WeightGraph &gr);
+	virtual ~WeightGraph();
+public:
+	void addWeights(int x, int y, int weight);
+
+	///返回一个指定起点所形成的的最短加权路径数组(向量)
+	std::vector<int> dijkstra(int startLabel);
+
+	///重载版本，返回指定终点的加权路径长
+	int dijkstra(int startLabel, int endLabel)
+	{
+		std::vector<int> resultVector = dijkstra(startLabel);
+		return resultVector[endLabel];
+	}
+
+    int getVertexNumber() { return vertexSum; }
+    int getEdgeNumber()   { return edgeSum;   }
+private:
+	///使用邻接表进行数据储存，包括顶点表和边链表
+	HeadList *hlist = nullptr;
+	int vertexSum   = 0;
+	int edgeSum     = 0;
+};
+
+#endif // WEIGHTGRAPH_H
