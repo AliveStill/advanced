@@ -1,0 +1,99 @@
+#include <iostream>
+
+
+///case 1暴力枚举法求最大子数列O(n * n)
+int maximumSubarray1(int *arr, int low, int high)
+{
+	int result = 0;
+	int sum;
+	int sumPerRound;
+	for ( int i = low ; i <= high ; ++ i )
+	{
+		sumPerRound = 0;
+		sum = 0;
+		for ( int j = i ; j <= high ; ++ j )
+		{
+			sumPerRound += arr[j];
+			if ( sumPerRound > sum ) { sum = sumPerRound; }
+		} 
+		if ( sum > result ) { result = sum; }
+	}
+
+	return result;
+}
+
+
+///case 2的auxiliary function
+int findMaxiumuSubarrayAcrossBorder(int *arr, int low, int media, int high)
+{
+	int leftSum = 0;
+	int rightSum = 0;
+	int sum = 0; 
+	for ( int i = media ; i >= low ; -- i )
+	{
+		sum += arr[i];
+		if ( leftSum < sum ) { leftSum = sum; }
+	}
+	sum = 0;
+	for ( int i = media + 1 ; i <= high ; ++ i ) 
+	{
+		sum += arr[i];
+		if ( rightSum < sum ) { rightSum = sum; }
+	}
+
+	return rightSum + leftSum; 
+}
+
+///case 2分治法求最大子数列O(nlgn)
+///分治法的策略只要理解了就不难证明其正确性
+///好吧现在的我办不到。。。
+
+int maximumSubarray2(int *arr, int low, int high)
+{
+	if ( low == high ) { return arr[low]; }
+
+	int media 	 = low + ( high - low ) / 2;
+	int leftSum  = maximumSubarray2(arr, low, media);
+	int mediaSum = findMaxiumuSubarrayAcrossBorder(arr, low, media, high);
+	int rightSum = maximumSubarray2(arr, media + 1, high);
+	if ( leftSum >= mediaSum && leftSum >= rightSum ) { return leftSum; }
+	else if ( rightSum >= mediaSum && rightSum >= leftSum ) { return rightSum; }
+	else { return mediaSum; }
+}
+
+///case 3O(n)求最大子数列
+int maximumSubarray3(int *arr, int low, int high)
+{
+	///这种方法比较巧妙， 能够有效的处理非负整数情况
+	///但是还是有必要消化一下这种方法
+	int result = 0;
+	int curSum = 0;
+	for ( int i = low ; i <= high ; ++ i )
+	{
+		curSum += arr[i];
+		if ( curSum > result ) { result = curSum; }
+		if ( curSum < 0 ) { curSum = 0; }
+	}
+
+	return result;
+}
+///现在尝试证明其正确性：
+///假设从xi...到xj是一个最长子序列， 则其最后面的前缀只能是和为负的
+///因为如果其和是非负的， 则其更前面的一段必定是负的， 而负序列一经发现就要被丢弃
+///与假设矛盾， 所以遇到和为负时丢弃前缀不会影响算法的正确性
+///而每次遇到有负数时都将前一段序列抛弃， 进行下一轮寻找
+
+///interface
+void maximumSubarray(int *arr, int n)
+{
+	std::cout << maximumSubarray1(arr, 0, n - 1) << std::endl;
+	std::cout << maximumSubarray2(arr, 0, n - 1) << std::endl;
+	std::cout << maximumSubarray3(arr, 0, n - 1) << std::endl;
+}
+int main(int argc, char **argv)
+{
+	int a[16] = {13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7};
+	maximumSubarray(a, 16);
+
+	return 0;
+}
